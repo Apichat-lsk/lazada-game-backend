@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.3-eclipse-temurin-17'
-            args '-v $HOME/.m2:/root/.m2'  // optional สำหรับ cache Maven dependencies
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -15,7 +10,8 @@ pipeline {
 
         stage('Build JAR') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                // รัน Maven ผ่าน Docker container แทน
+                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.3-eclipse-temurin-17 mvn clean package -DskipTests'
             }
         }
 
