@@ -13,6 +13,15 @@ pipeline {
             }
         }
 
+        stage('List workspace files') {
+            steps {
+                sh 'ls -l'
+                sh 'ls -l docker-compose.yml Dockerfile || true'
+                sh 'docker --version'
+                sh 'docker compose version || true'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:latest ."
