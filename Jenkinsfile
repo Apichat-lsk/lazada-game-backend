@@ -1,13 +1,13 @@
 pipeline {
-    agent any
-
-    environment {
-        IMAGE_NAME = "springboot-app"
-        CONTAINER_NAME = "springboot-container"
+    agent {
+        docker {
+            image 'maven:3.9.3-eclipse-temurin-17'
+            args '-v $HOME/.m2:/root/.m2'  // optional สำหรับ cache Maven dependencies
+        }
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Apichat-lsk/lazada-game-backend.git'
             }
@@ -21,14 +21,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:latest ."
+                sh 'docker build -t lazada-game-backend:latest .'
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy') {
             steps {
-                sh "docker compose down"
-                sh "docker compose up -d"
+                sh 'docker-compose down || true'
+                sh 'docker-compose up -d --build'
             }
         }
     }
