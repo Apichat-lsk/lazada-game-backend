@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  jackson:
+    time-zone: Asia/Bangkok
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/game
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: apichatlasuk13@gmail.com
+    password: hkes vheb gbru lzmt
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+jwt:
+  secret: mysecretkey12345678901234567890123456789012  # ความยาวต้อง ≥ 32 bytes
+  expiration: 86400000  # 1 ชั่วโมง
