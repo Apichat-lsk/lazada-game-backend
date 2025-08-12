@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "lazada-game-app"
+        CONTAINER_NAME = "lazada-game-app-container"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,23 +13,25 @@ pipeline {
             }
         }
 
-        stage('Build JAR') {
+        stage('List workspace files') {
             steps {
-                // รัน Maven ผ่าน Docker container แทน
-                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.3-eclipse-temurin-17 mvn clean package -DskipTests'
+                sh 'ls -l'
+                sh 'ls -l docker-compose.yml Dockerfile || true'
+                sh 'docker --version'
+                sh 'docker compose version || true'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t lazada-game-backend:latest .'
+                sh "docker build -t ${IMAGE_NAME}:latest ."
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose down || true'
-                sh 'docker-compose up -d --build'
+                sh "docker compose down || true"
+                sh "docker compose up -d --build"
             }
         }
     }
