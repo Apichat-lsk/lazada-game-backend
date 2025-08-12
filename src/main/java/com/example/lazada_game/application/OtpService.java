@@ -25,25 +25,18 @@ public class OtpService {
 
     private final RedisTemplate<String, Object> redisTemplateObject;
     private final RedisTemplate<String, String> redisTemplateString;
-    private final JavaMailSender mailSender;
+    // private final JavaMailSender mailSender;
     private final ChannelTopic otpResultTopic;
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    private final EmailService emailService;
 
     @Async
-    public void saveOtp(Users users, String otp) {
+    public void sendOtpAwsService(Users users, String otp) {
         try {
             String keyOtp = "otp:" + users.getEmail();
             String keyUsers = "user:" + users.getEmail();
             redisTemplateString.opsForValue().set(keyOtp, otp, Duration.ofMinutes(5));
             redisTemplateObject.opsForValue().set(keyUsers, users, Duration.ofMinutes(5));
-            SimpleMailMessage message = new SimpleMailMessage();
-            System.out.println("Send OTP Email :" + users.getEmail());
-            message.setTo(users.getEmail());
-            message.setSubject("Your OTP Code");
-            message.setText("Your OTP code is: " + otp);
-            message.setFrom(fromEmail);
-            mailSender.send(message);
+            emailService.sendOtpEmail(users.getEmail(), otp);
         } catch (Exception e) {
             log.error("Failed to send OTP email to {}: {}", users.getEmail(), e.getMessage());
             throw new RuntimeException("Failed to send OTP");
