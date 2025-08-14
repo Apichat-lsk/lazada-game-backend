@@ -26,17 +26,16 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-
     public RegisterResponse register(Users users) {
         RegisterResponse result = new RegisterResponse();
         try {
             if (authRepository.existsByEmail(users.getEmail())) {
-//                throw new RuntimeException("Email already exists");
+                // throw new RuntimeException("Email already exists");
                 result.setMessage("Email already exists");
                 result.setCheck(false);
                 return result;
             } else if (authRepository.existsByUsername(users.getUsername())) {
-//                throw new RuntimeException("Email already exists");
+                // throw new RuntimeException("Email already exists");
                 result.setMessage("Username already exists");
                 result.setCheck(false);
                 return result;
@@ -44,13 +43,13 @@ public class AuthService {
                 result.setMessage("Send OTP Success");
                 result.setCheck(true);
                 return result;
-//                Users user = new Users();
-//                user.setUsername(users.getUsername());
-//                user.setPassword(passwordEncoder.encode(users.getPassword()));
-//                user.setTel(users.getTel());
-//                user.setEmail(users.getEmail());
-//                System.out.println("Registering user: " + user.getEmail());
-//                authRepository.register(user);
+                // Users user = new Users();
+                // user.setUsername(users.getUsername());
+                // user.setPassword(passwordEncoder.encode(users.getPassword()));
+                // user.setTel(users.getTel());
+                // user.setEmail(users.getEmail());
+                // System.out.println("Registering user: " + user.getEmail());
+                // authRepository.register(user);
             }
         } catch (Exception e) {
             System.err.println("Failed to process Redis message: " + e.getMessage());
@@ -108,19 +107,30 @@ public class AuthService {
 
     public JwtResponse login(LoginRequest loginRequest) {
         JwtResponse result = new JwtResponse();
+        Users user = new Users();
         Optional<Users> optionalUser = authRepository.findByUsername(loginRequest.getUsername());
+
         if (optionalUser.isEmpty()) {
             result.setMessage("Invalid username or password");
             result.setStatus(false);
-//            throw new RuntimeException("Invalid username or password");
-            return result;
+            Optional<Users> optionalUserEmail = authRepository.findByEmail(loginRequest.getEmail());
+
+            if (optionalUserEmail.isEmpty()) {
+                result.setMessage("Invalid email or password");
+                result.setStatus(false);
+                return result;
+            } else {
+                user = optionalUserEmail.get();
+            }
+        } else {
+            user = optionalUser.get();
         }
-        Users user = optionalUser.get();
+
         System.out.println("Input Password :" + loginRequest.getPassword());
         System.out.println("Db Password :" + user.getPassword());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             result.setMessage("Invalid username or password");
-//            throw new RuntimeException("Invalid username or password");
+            // throw new RuntimeException("Invalid username or password");
             result.setStatus(false);
             return result;
         }
