@@ -30,7 +30,7 @@ public class OtpService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-//    @Async
+    @Async
     public void saveOtp(Users users, String otp) {
         try {
             String keyOtp = "otp:" + users.getEmail();
@@ -72,7 +72,7 @@ public class OtpService {
                 payload.put("success", true);
                 payload.put("users", users);
 
-                String message = mapper.writeValueAsString(payload);   // serialize map to JSON string
+                String message = mapper.writeValueAsString(payload); // serialize map to JSON string
                 System.out.println("Message sent to Redis topic: " + message);
                 redisTemplateObject.convertAndSend(otpResultTopic.getTopic(), message);
 
