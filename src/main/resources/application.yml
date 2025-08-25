@@ -6,12 +6,12 @@ spring:
     time-zone: Asia/Bangkok
   data:
     mongodb:
-      uri: mongodb://mongodb:27017/game
+      uri: ${MONGO_URI} # จาก environment variable
   mail:
     host: smtp.gmail.com
     port: 587
-    username: apichatlasuk13@gmail.com
-    password: hkes vheb gbru lzmt
+    username: ${MAIL_USERNAME} # จาก environment variable
+    password: ${MAIL_PASSWORD} # จาก environment variable
     properties:
       mail:
         smtp:
@@ -19,9 +19,15 @@ spring:
           starttls:
             enable: true
 
+aws:
+  accessKey: ${AWS_ACCESS_KEY_ID} # จาก environment variable
+  secretKey: ${AWS_SECRET_ACCESS_KEY} # จาก environment variable
+  region: ap-southeast-1
+
 logging:
   level:
     org.springframework.security: DEBUG
+
 jwt:
-  secret: mysecretkey12345678901234567890123456789012  # ความยาวต้อง ≥ 32 bytes
-  expiration: 86400000  # 1 ชั่วโมง
+  secret: ${JWT_SECRET} # จาก environment variable
+  expiration: 86400000
