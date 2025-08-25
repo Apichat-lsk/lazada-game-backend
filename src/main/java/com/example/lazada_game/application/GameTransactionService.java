@@ -3,6 +3,7 @@ package com.example.lazada_game.application;
 import com.example.lazada_game.domain.model.GameTransaction;
 import com.example.lazada_game.domain.repository.GameTransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.List;
 public class GameTransactionService {
 
     private final GameTransactionRepository gameTransactionRepository;
+    private final ActivityLogsService activityLogsService;
 
     public void createGameTransaction(List<GameTransaction> gameTransaction) {
         try {

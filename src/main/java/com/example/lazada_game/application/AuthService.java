@@ -28,16 +28,17 @@ public class AuthService {
     private final ActivityLogsService activityLogsService;
     private final JwtUtils jwtUtils;
 
+
     public RegisterResponse register(Users users) {
         RegisterResponse result = new RegisterResponse();
         try {
             if (authRepository.existsByEmail(users.getEmail())) {
-                // throw new RuntimeException("Email already exists");
+//                throw new RuntimeException("Email already exists");
                 result.setMessage("อีเมลนี้ถูกใช้งานแล้ว");
                 result.setCheck(false);
                 return result;
             } else if (authRepository.existsByUsername(users.getUsername())) {
-                // throw new RuntimeException("Email already exists");
+//                throw new RuntimeException("Email already exists");
                 result.setMessage("ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว");
                 result.setCheck(false);
                 return result;
@@ -59,12 +60,12 @@ public class AuthService {
         RegisterResponse result = new RegisterResponse();
         try {
             if (authRepository.existsByEmail(users.getEmail())) {
-                // throw new RuntimeException("Email already exists");
+//                throw new RuntimeException("Email already exists");
                 result.setMessage("อีเมลนี้ถูกใช้งานแล้ว");
                 result.setCheck(false);
                 return result;
             } else if (authRepository.existsByUsername(users.getUsername())) {
-                // throw new RuntimeException("Email already exists");
+//                throw new RuntimeException("Email already exists");
                 result.setMessage("ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว");
                 result.setCheck(false);
                 return result;
@@ -119,8 +120,7 @@ public class AuthService {
             newUser.setCreateAt(LocalDateTime.now());
             Users res = authRepository.register(newUser);
             ObjectId userId = new ObjectId(res.getId());
-            activityLogsService.createActivityLogs(userId, users.getEmail(),
-                    "User " + res.getEmail() + " Register Success", "Register");
+            activityLogsService.createActivityLogs(userId, users.getEmail(), "User " + res.getEmail() + " Register Success", "Register");
             System.out.println("✅ Registered user: " + newUser.getEmail());
 
         } catch (Exception e) {
@@ -153,13 +153,12 @@ public class AuthService {
         System.out.println("Db Password :" + user.getPassword());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             result.setMessage("รหัสผ่านไม่ถูกต้อง");
-            // throw new RuntimeException("Invalid username or password");
+//            throw new RuntimeException("Invalid username or password");
             result.setStatus(false);
             return result;
         }
         ObjectId userId = new ObjectId(user.getId());
-        activityLogsService.createActivityLogs(userId, loginRequest.getEmail(), "User " + user.getEmail() + " Login",
-                "Login");
+        activityLogsService.createActivityLogs(userId, loginRequest.getEmail(), "User " + user.getEmail() + " Login", "Login");
         result.setToken(jwtUtils.generateToken(user));
         result.setMessage("Login successfully");
         result.setStatus(true);
@@ -174,8 +173,7 @@ public class AuthService {
         Users user = authRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("ไม่มีอีเมลนี้ในระบบ: " + request.getEmail()));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        activityLogsService.createActivityLogs(null, request.getEmail(), "User " + user.getEmail() + " Change Password",
-                "Change Password");
+        activityLogsService.createActivityLogs(null, request.getEmail(), "User " + user.getEmail() + " Change Password", "Change Password");
         return authRepository.updateByEmail(user);
     }
 

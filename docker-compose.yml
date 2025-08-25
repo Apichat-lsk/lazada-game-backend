@@ -1,33 +1,22 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: lazada-game-backend
     ports:
       - "8080:8080"
     depends_on:
-      - mongodb
       - redis
+    env_file:
+      - .env # โหลด secret จากไฟล์ .env (ไม่ push ขึ้น GitHub)
+    networks:
+      - backend
+    restart: unless-stopped
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/game
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
       TZ: Asia/Bangkok
-    networks:
-      - backend
-
-  mongodb:
-    image: mongo:6.0
-    container_name: mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - backend
 
   redis:
     image: redis:7.2
@@ -41,7 +30,6 @@ services:
       - backend
 
 volumes:
-  mongo-data:
   redis-data:
 
 networks:

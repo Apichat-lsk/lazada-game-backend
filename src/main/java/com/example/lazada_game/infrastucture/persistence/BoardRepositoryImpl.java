@@ -49,7 +49,7 @@ public class BoardRepositoryImpl implements BoardRepository {
         System.out.println("Start Date: " + startDate);
         System.out.println("End Date:   " + endDate);
         Aggregation agg = newAggregation(
-                match(Criteria.where("createAt").gte(startDate)
+                match(Criteria.where("questionsDate").gte(startDate)
                         .lte(endDate)),
                 group("user_id").sum("score").as("score"),
                 lookup("users", "_id", "_id", "userInfo"),

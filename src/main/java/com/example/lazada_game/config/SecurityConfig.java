@@ -31,10 +31,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/otp/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/recaptcha/**").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/otp/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/recaptcha/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
                 .httpBasic(Customizer.withDefaults());
@@ -47,7 +48,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200","https://lazada-game-frontend.vercel.app/")); // ปรับตาม frontend origin
+        config.setAllowedOrigins(List.of("http://localhost:4200", "https://lazada-game-frontend.vercel.app/")); // ปรับตาม frontend origin
 //        config.setAllowedOriginPatterns(List.of("http://localhost:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

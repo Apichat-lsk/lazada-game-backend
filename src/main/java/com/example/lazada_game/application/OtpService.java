@@ -25,7 +25,7 @@ public class OtpService {
 
     private final RedisTemplate<String, Object> redisTemplateObject;
     private final RedisTemplate<String, String> redisTemplateString;
-    // private final JavaMailSender mailSender;
+//    private final JavaMailSender mailSender;
     private final ChannelTopic otpResultTopic;
     private final EmailService emailService;
 
@@ -36,7 +36,7 @@ public class OtpService {
             String keyUsers = "user:" + users.getEmail();
             redisTemplateString.opsForValue().set(keyOtp, otp, Duration.ofMinutes(5));
             redisTemplateObject.opsForValue().set(keyUsers, users, Duration.ofMinutes(5));
-            emailService.sendOtpEmail(users.getEmail(), otp);
+            emailService.sendOtpEmail(users.getEmail(),otp);
         } catch (Exception e) {
             log.error("Failed to send OTP email to {}: {}", users.getEmail(), e.getMessage());
             throw new RuntimeException("Failed to send OTP");

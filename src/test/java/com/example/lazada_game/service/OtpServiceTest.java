@@ -1,8 +1,8 @@
 package com.example.lazada_game.service;
 
+import com.example.lazada_game.application.EmailService;
 import com.example.lazada_game.application.OtpService;
 import com.example.lazada_game.domain.model.Users;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,25 +11,26 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class OtpServiceTest {
 
     @Mock
-    private RedisTemplate<String,Object> redisTemplateObject;
+    private RedisTemplate<String, Object> redisTemplateObject;
     @Mock
-    private ValueOperations<String,Object> valueOpsObject;
+    private ValueOperations<String, Object> valueOpsObject;
     @Mock
     private RedisTemplate<String, String> redisTemplateString;
     @Mock
     private ValueOperations<String, String> valueOpsString;
     @Mock
-    private JavaMailSender mailSender;
+    private EmailService emailService;
     @Mock
     private org.springframework.data.redis.listener.ChannelTopic otpResultTopic;
     @InjectMocks
@@ -43,32 +44,39 @@ public class OtpServiceTest {
         when(redisTemplateObject.opsForValue()).thenReturn(valueOpsObject);
         when(redisTemplateString.opsForValue()).thenReturn(valueOpsString);
 
-        // Mock topic name for sending messages
+        // Mock topic name
         when(otpResultTopic.getTopic()).thenReturn("otpResultTopic");
 
-        otpService = new OtpService(redisTemplateObject, redisTemplateString, mailSender, otpResultTopic);
+        // ใช้ constructor ใหม่ที่รับ EmailService แทน JavaMailSender
+        otpService = new OtpService(redisTemplateObject, redisTemplateString, otpResultTopic, emailService);
     }
 
-
     @Test
-    void testSaveOtp(){
+    void testSaveOtp() {
         Users users = new Users();
         users.setEmail("test@admin.com");
         String otp = "123456";
 
+        // mock Redis set
         doNothing().when(valueOpsString).set(anyString(), anyString(), any());
         doNothing().when(valueOpsObject).set(anyString(), any(), any());
-        doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 
-        otpService.saveOtp(users, otp);
+        // mock EmailService
+        doNothing().when(emailService).sendOtpEmail(anyString(), anyString());
 
+        // เรียก method ใหม่
+        otpService.sendOtpAwsService(users, otp);
+
+        // verify Redis
         verify(valueOpsString).set(eq("otp:" + users.getEmail()), eq(otp), any());
         verify(valueOpsObject).set(eq("user:" + users.getEmail()), eq(users), any());
-        verify(mailSender).send(any(SimpleMailMessage.class));
+
+        // verify EmailService
+        verify(emailService).sendOtpEmail(eq(users.getEmail()), eq(otp));
     }
 
     @Test
-    void testValidateOtp_Correct(){
+    void testValidateOtp_Correct() {
         String email = "test@example.com";
         String otpInput = "123456";
 
@@ -88,7 +96,7 @@ public class OtpServiceTest {
     }
 
     @Test
-    void testValidateOtp_Incorrect(){
+    void testValidateOtp_Incorrect() {
         String email = "test@example.com";
         String otpInput = "wrongOtp";
 
@@ -107,15 +115,16 @@ public class OtpServiceTest {
     }
 
     @Test
-    void testForgotPasswordVerifyOtp_Correct(){
+    void testForgotPasswordVerifyOtp_Correct() {
         String email = "test@example.com";
         String otp = "123456";
 
         when(valueOpsString.get("otp:" + email)).thenReturn(otp);
         assertTrue(otpService.forgotPasswordVerifyOtp(email, otp));
     }
+
     @Test
-    void testForgotPasswordVerifyOtp_Incorrect(){
+    void testForgotPasswordVerifyOtp_Incorrect() {
         String email = "test@example.com";
         String otp = "wrongOtp";
 

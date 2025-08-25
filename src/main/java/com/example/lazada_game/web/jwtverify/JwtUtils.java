@@ -33,6 +33,8 @@ public class JwtUtils {
                 .claim("uid",users.getId())
                 .claim("tel",users.getTel())
                 .claim("email",users.getEmail())
+                .claim("full_name",users.getFullName())
+                .claim("username",users.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -66,7 +68,7 @@ public class JwtUtils {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())

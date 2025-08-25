@@ -79,7 +79,7 @@ class OtpControllerTest {
 
         Mockito.when(authService.register(Mockito.any(Users.class))).thenReturn(registerResponse);
 
-        Mockito.doNothing().when(otpService).saveOtp(Mockito.any(Users.class), Mockito.anyString());
+        Mockito.doNothing().when(otpService).sendOtpAwsService(Mockito.any(Users.class), Mockito.anyString());
 
         mockMvc.perform(post("/api/otp/send")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,18 +1,15 @@
 package com.example.lazada_game.web.dto;
 
-import com.example.lazada_game.domain.model.Questions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AnswerRequest {
-
+@NoArgsConstructor
+public class CheckAnswerRequest {
     private String id;
     private String user_id;
     private String titleChoice;

@@ -1,5 +1,6 @@
 package com.example.lazada_game.web.controller;
 
+import com.example.lazada_game.application.ActivityLogsService;
 import com.example.lazada_game.application.AuthService;
 import com.example.lazada_game.domain.model.Users;
 import com.example.lazada_game.web.dto.*;
@@ -18,19 +19,22 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-
-//    @PostMapping("/register")
-//    public ResponseEntity<RegisterResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
-//        authService.register(registerRequest);
-//        RegisterResponse result = RegisterResponse.builder()
-//                .message("Register Success")
-//                .build();
-//        return ResponseEntity.status(HttpStatus.OK).body(result);
-//    }
+    private final ActivityLogsService activityLogsService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginRequest));
+    }
+
+    @PostMapping("/check-duplicate")
+    public ResponseEntity<?> checkDuplicate(@RequestBody @Valid Users users){
+        RegisterResponse message = authService.checkDuplicate(users);
+        if (message.getCheck().equals(true)) {
+            activityLogsService.createActivityLogs(null, users.getEmail(), "Check Duplicate Email & Username " + users.getEmail() + " & " + users.getUsername(), "Check Duplicate");
+            return ResponseEntity.ok(message);
+        } else {
+            return ResponseEntity.ok(message);
+        }
     }
 
     @PostMapping("/change-password")
@@ -39,10 +43,10 @@ public class AuthController {
         try {
             Users user = authService.changePassword(request);
             if (user != null) {
-                result.setMessage("Change password success");
+                result.setMessage("เปลี่ยนรหัสผ่านสำเร็จ");
                 result.setStatus(true);
             } else {
-                result.setMessage("Change password failed");
+                result.setMessage("เปลี่ยนรหัสผ่านไม่สำเร็จ");
                 result.setStatus(false);
             }
         } catch (Exception e) {
