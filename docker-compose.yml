@@ -8,7 +8,6 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mongodb
       - redis
     environment:
       SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
@@ -20,17 +19,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       JWT_SECRET: ${JWT_SECRET}
       TZ: ${TZ}
-    networks:
-      - backend
-
-  mongodb:
-    image: mongo:6.0
-    container_name: mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
     networks:
       - backend
 
@@ -46,7 +34,6 @@ services:
       - backend
 
 volumes:
-  mongo-data:
   redis-data:
 
 networks:
