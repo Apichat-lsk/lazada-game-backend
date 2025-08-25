@@ -5,18 +5,34 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: lazada-game-backend
     ports:
       - "8080:8080"
     depends_on:
+      - mongodb
       - redis
-    env_file:
-      - .env # โหลด secret จากไฟล์ .env (ไม่ push ขึ้น GitHub)
+    environment:
+      SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
+      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      TZ: ${TZ}
     networks:
       - backend
-    restart: unless-stopped
-    environment:
-      TZ: Asia/Bangkok
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
 
   redis:
     image: redis:7.2
@@ -30,6 +46,7 @@ services:
       - backend
 
 volumes:
+  mongo-data:
   redis-data:
 
 networks:

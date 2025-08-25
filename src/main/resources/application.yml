@@ -2,32 +2,31 @@ server:
   port: 8080
 
 spring:
-  jackson:
-    time-zone: Asia/Bangkok
   data:
     mongodb:
-      uri: ${MONGO_URI} # จาก environment variable
+      uri: ${SPRING_DATA_MONGODB_URI}
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME} # จาก environment variable
-    password: ${MAIL_PASSWORD} # จาก environment variable
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  jackson:
+    time-zone: ${TZ}
 
 aws:
-  accessKey: ${AWS_ACCESS_KEY_ID} # จาก environment variable
-  secretKey: ${AWS_SECRET_ACCESS_KEY} # จาก environment variable
+  accessKey: ${AWS_ACCESS_KEY_ID}
+  secretKey: ${AWS_SECRET_ACCESS_KEY}
   region: ap-southeast-1
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-
 jwt:
-  secret: ${JWT_SECRET} # จาก environment variable
+  secret: ${JWT_SECRET}
   expiration: 86400000
