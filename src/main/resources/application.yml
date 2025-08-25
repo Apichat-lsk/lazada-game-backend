@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  jackson:
+    time-zone: Asia/Bangkok
+  data:
+    mongodb:
+      uri: ${MONGO_URI} # จาก environment variable
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME} # จาก environment variable
+    password: ${MAIL_PASSWORD} # จาก environment variable
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+aws:
+  accessKey: ${AWS_ACCESS_KEY_ID} # จาก environment variable
+  secretKey: ${AWS_SECRET_ACCESS_KEY} # จาก environment variable
+  region: ap-southeast-1
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET} # จาก environment variable
+  expiration: 86400000
