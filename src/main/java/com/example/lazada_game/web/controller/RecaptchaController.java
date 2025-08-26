@@ -23,13 +23,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecaptchaController {
 
-    private final String SECRET_KEY = "6LeSJ5orAAAAAK6R65cnenrNi21hTEysjBVoQ21e";
     private final RecaptchaService recaptchaService;
     private final DecodeToken decodeToken;
     private final ActivityLogsService activityLogsService;
 
     @PostMapping("/verify-recaptcha")
-    public ResponseEntity<?> verifyRecaptcha(HttpServletRequest request ,@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> verifyRecaptcha(HttpServletRequest request, @RequestBody Map<String, String> body) {
         String token = body.get("token");
         if (token == null || token.isEmpty()) {
             return ResponseEntity.badRequest().body("Missing token");
@@ -37,13 +36,15 @@ public class RecaptchaController {
         boolean valid = recaptchaService.verifyToken(token);
         UserTokenInfo userInfo = decodeToken.decodeToken(request);
         if (valid) {
-            activityLogsService.createActivityLogs(userInfo.getUserId(), userInfo.getEmail(), "User " + userInfo.getEmail() + " Recaptcha success", "Recaptcha");
+            activityLogsService.createActivityLogs(userInfo.getUserId(), userInfo.getEmail(),
+                    "User " + userInfo.getEmail() + " Recaptcha success", "Recaptcha");
             return ResponseEntity.ok(Map.of("status", true, "message", "ยืนยันตัวตน สำเร็จ"));
         } else {
-            activityLogsService.createActivityLogs(userInfo.getUserId(), userInfo.getEmail(), "User " + userInfo.getEmail() + " Recaptcha failed", "Recaptcha");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("status", false, "message", "ยืนยันตัวตน ไม่สำเร็จ"));
+            activityLogsService.createActivityLogs(userInfo.getUserId(), userInfo.getEmail(),
+                    "User " + userInfo.getEmail() + " Recaptcha failed", "Recaptcha");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("status", false, "message", "ยืนยันตัวตน ไม่สำเร็จ"));
         }
     }
-
 
 }
